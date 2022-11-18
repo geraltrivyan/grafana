@@ -378,7 +378,7 @@ func (hs *HTTPServer) getPluginAssets(c *models.ReqContext) {
 		return
 	}
 	cdnPlugins := map[string]struct{}{}
-	for _, k := range strings.Split(os.Getenv("CDN_PLUGINS"), ",") {
+	for _, k := range strings.Split(os.Getenv("POC_CDN_PROXY_PLUGINS"), ",") {
 		cdnPlugins[k] = struct{}{}
 	}
 
@@ -398,7 +398,7 @@ func (hs *HTTPServer) getPluginAssets(c *models.ReqContext) {
 
 	// TODO: Plugins CDN: unhardcode
 	_, useCDN := cdnPlugins[pluginID]
-	useRedirect := true
+	useRedirect := os.Getenv("POC_CDN_PROXY_USE_REDIRECT") == "true"
 	var asset pluginAsset
 	if useCDN {
 		if useRedirect {

@@ -85,7 +85,7 @@ function renderLogMessage(
   }
 }
 
-const restructureLog = memoizeOne((line: string, prettifyLogMessage: boolean): string => {
+export const restructureLog = memoizeOne((line: string, prettifyLogMessage: boolean): string => {
   if (prettifyLogMessage) {
     try {
       return JSON.stringify(JSON.parse(line), undefined, 2);

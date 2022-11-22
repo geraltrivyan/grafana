@@ -82,6 +82,7 @@ class UnThemedLogDetails extends PureComponent<Props> {
       showDetectedFields,
       getFieldLinks,
       wrapLogMessage,
+      prettifyLogMessage,
     } = this.props;
     const style = getLogRowStyles(theme, row.logLevel);
     const styles = getStyles(theme);
@@ -156,6 +157,7 @@ class UnThemedLogDetails extends PureComponent<Props> {
                           : calculateStats(row.dataFrame.fields[fieldIndex].values.toArray())
                       }
                       showDetectedFields={showDetectedFields}
+                      prettifyLogMessage={prettifyLogMessage}
                       wrapLogMessage={wrapLogMessage}
                     />
                   );

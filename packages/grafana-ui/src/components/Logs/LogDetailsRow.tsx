@@ -8,6 +8,7 @@ import { Themeable2 } from '../../types/theme';
 import { DataLinkButton } from '../DataLinks/DataLinkButton';
 import { IconButton } from '../IconButton/IconButton';
 
+import { LogDetailsRowJson } from './LogDetailsRowJson';
 import { LogLabelStats } from './LogLabelStats';
 import { restructureLog } from './LogRowMessage';
 import { getLogRowStyles } from './getLogRowStyles';
@@ -32,17 +33,6 @@ interface State {
   showFieldsStats: boolean;
   fieldCount: number;
   fieldStats: LogLabelStatsModel[] | null;
-}
-
-function checkIsJson(jsonString) {
-  try {
-    const o = JSON.parse(jsonString);
-    if (o && typeof o === 'object') {
-      return true;
-    }
-  } catch (e) {}
-
-  return false;
 }
 
 const getStyles = (theme: GrafanaTheme2) => {
@@ -146,14 +136,21 @@ class UnThemedLogDetailsRow extends PureComponent<Props, State> {
     const hasDetectedFieldsFunctionality = onClickShowDetectedField && onClickHideDetectedField;
     const hasFilteringFunctionality = onClickFilterLabel && onClickFilterOutLabel;
 
-    let restructuredValue = parsedValue;
     let isJson = false;
+    let jsonValue = {};
 
     if (prettifyLogMessage) {
-      isJson = checkIsJson(parsedValue);
-      if (isJson) {
-        restructuredValue = restructureLog(parsedValue, prettifyLogMessage);
-      }
+      try {
+        const o = JSON.parse(parsedValue);
+        if (o && typeof o === 'object') {
+          isJson = true;
+          let initial = 'object';
+          if (Array.isArray(o)) {
+            initial = 'array';
+          }
+          jsonValue = { [`${initial}`]: o };
+        }
+      } catch (e) {}
     }
 
     const toggleFieldButton =
@@ -189,8 +186,10 @@ class UnThemedLogDetailsRow extends PureComponent<Props, State> {
 
         {/* Key - value columns */}
         <td className={style.logDetailsLabel}>{parsedKey}</td>
-        <td className={cx(styles.wordBreakAll, (wrapLogMessage || isJson) && styles.wrapLine)}>
-          {restructuredValue}
+        <td className={cx(styles.wordBreakAll, wrapLogMessage && styles.wrapLine)}>
+          {isJson && jsonValue && <LogDetailsRowJson theme={theme} jsonValue={jsonValue} first={true} />}
+          {!isJson && parsedValue}
+
           {links?.map((link) => (
             <span key={link.title}>
               &nbsp;
